@@ -6,6 +6,19 @@ import json
 
 app = Flask(__name__)
 
+def create_plane_mesh(a, b, c, d, x_range, y_range):
+    """Generate mesh points for the plane ax + by + cz = d"""
+    if c == 0:
+        return None, None, None
+    
+    x = np.linspace(x_range[0], x_range[1], 20)
+    y = np.linspace(y_range[0], y_range[1], 20)
+    X, Y = np.meshgrid(x, y)
+
+    Z= (d - a*X - b*Y) / c
+
+    return X, Y, Z
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -50,8 +63,53 @@ def visualize():
         solution_type = "Infinite Solutions"
         solution = None
     
-    return f"<h1>Solution Type: {solution_type}</h1><p>Solution: {solution}</p>"
+    if solution is not None:
+        plot_range = max(10, np.max(np.abs(solution))* 2)
 
+    else:
+        plot_range = 10
+
+    x_range = [-plot_range, plot_range]
+    y_range = [-plot_range, plot_range]
+
+    fig = go.Figure()
+
+    colors = ["blue", "red", "green"]
+    equations = [
+        (a1, b1, c1, d1, "Plane 1")
+        (a2, b2, c2, d2, "Plane 2")
+        (a3, b3, c3, d3, "Plane 3")
+    ]
+
+    for (a, b, c, d, name), color in zip(equations, colors):
+        X, Y, Z = create_plane_mesh(a, b, c, d, x_range, y_range)
+        if X is not None:  
+            fig.add_trace(go.Surface(
+                x=X, y=Y, z=Z, name=name,
+                colorscale=[[0, color], [1, color]],
+                showscale=False, opacity=0.7
+            ))
+
+    if solution is not None:
+        fig.add_trace(go.Scatter3d(
+            x=[solution[0]],
+            y=[solution[1]],
+            z=[solution[2]],
+            mode="markers",
+            marker=dict(size=10, color="yellow"),
+            name="Intersection Point"
+        ))
+    fig.update_layout(
+        title=f"Solution Type: {solution_type}",
+        scene=dict(
+            xaxis_title="X",
+            yaxis_title="Y",
+            zaxis_title="Z"
+        )
+    )
+
+    graph_html = plotly.offline.plot(fig, output_type="div", include_plotlyjs="cdn")
+    return render_template("result.html", graph=graph_html, solution_type=solution_type, solution=solution)
 
 if __name__ == "__main__":
     app.run(debug=True)
