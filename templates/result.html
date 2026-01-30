@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visualization Result</title>
+</head>
+<body>
+    <h1>{{ solution_type }}</h1>
+    
+    {% if solution is not none %}
+        <p>Intersection Point: ({{ solution[0] }}, {{ solution[1] }}, {{ solution[2] }})</p>
+    {% endif %}
+    
+    <div>{{ graph|safe }}</div>
+    
+    <br>
+    <a href="/">Try Another System</a>
+</body>
+</html>
