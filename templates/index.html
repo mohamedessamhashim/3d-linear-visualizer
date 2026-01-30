@@ -1,31 +1,259 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Linear Equation Visualizer</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #e8eef5 0%, #dce5f0 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            color: #2d3748;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+            color: #1a365d;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        form {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 12px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .equation-group {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 8px;
+        }
+
+        .equation-group:last-of-type {
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+            color: #1a365d;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .plane-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        .plane-1 { background: #3b82f6; }
+        .plane-2 { background: #ef4444; }
+        .plane-3 { background: #22c55e; }
+
+        .inputs-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .input-group label {
+            font-size: 0.8rem;
+            color: #4a5568;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.6rem 0.5rem;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-radius: 6px;
+            background: #fff;
+            color: #2d3748;
+            font-size: 1rem;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .input-group input::placeholder {
+            color: #a0aec0;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.9rem;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.35);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .equation-format {
+            text-align: center;
+            padding: 0.75rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
+            color: #2563eb;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem 0.75rem;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            form {
+                padding: 1rem;
+            }
+
+            .equation-group {
+                padding: 0.75rem;
+            }
+
+            .inputs-row {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .input-group input {
+                padding: 0.5rem 0.4rem;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>3D Linear Equation Visualizer</h1>
-    <form method="POST" action="/visualize">
-        <h2>Enter coefficients for: ax + by + cz = d</h2>
-        <h3>Equation 1:</h3>
-        <label>a1: <input type="number" step="any" name="a1" required></label>
-        <label>b1: <input type="number" step="any" name="b1" required></label>
-        <label>c1: <input type="number" step="any" name="c1" required></label>
-        <label>d1: <input type="number" step="any" name="d1" required></label>
-        
-        <h3>Equation 2:</h3>
-        <label>a2: <input type="number" step="any" name="a2" required></label>
-        <label>b2: <input type="number" step="any" name="b2" required></label>
-        <label>c2: <input type="number" step="any" name="c2" required></label>
-        <label>d2: <input type="number" step="any" name="d2" required></label>
+    <div class="container">
+        <h1>3D Linear Equation Visualizer</h1>
+        <p class="subtitle">Visualize systems of three linear equations in 3D space</p>
 
-        <h3>Equation 3:</h3>
-        <label>a3: <input type="number" step="any" name="a3" required></label>
-        <label>b3: <input type="number" step="any" name="b3" required></label>
-        <label>c3: <input type="number" step="any" name="c3" required></label>
-        <label>d3: <input type="number" step="any" name="d3" required></label>
+        <form method="POST" action="/visualize">
+            <div class="equation-format">ax + by + cz = d</div>
 
-        <button type="submit">Visualize</button>
-    </form>
+            <div class="equation-group">
+                <h3><span class="plane-indicator plane-1"></span> Equation 1</h3>
+                <div class="inputs-row">
+                    <div class="input-group">
+                        <label for="a1">a</label>
+                        <input type="number" step="any" name="a1" id="a1" placeholder="0" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="b1">b</label>
+                        <input type="number" step="any" name="b1" id="b1" placeholder="0" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="c1">c</label>
+                        <input type="number" step="any" name="c1" id="c1" placeholder="0" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="d1">d</label>
+                        <input type="number" step="any" name="d1" id="d1" placeholder="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="equation-group">
+                <h3><span class="plane-indicator plane-2"></span> Equation 2</h3>
+                <div class="inputs-row">
+                    <div class="input-group">
+                        <label for="a2">a</label>
+                        <input type="number" step="any" name="a2" id="a2" placeholder="0" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="b2">b</label>
+                        <input type="number" step="any" name="b2" id="b2" placeholder="0" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="c2">c</label>
+                        <input type="number" step="any" name="c2" id="c2" placeholder="0" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="d2">d</label>
+                        <input type="number" step="any" name="d2" id="d2" placeholder="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="equation-group">
+                <h3><span class="plane-indicator plane-3"></span> Equation 3</h3>
+                <div class="inputs-row">
+                    <div class="input-group">
+                        <label for="a3">a</label>
+                        <input type="number" step="any" name="a3" id="a3" placeholder="0" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="b3">b</label>
+                        <input type="number" step="any" name="b3" id="b3" placeholder="0" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="c3">c</label>
+                        <input type="number" step="any" name="c3" id="c3" placeholder="0" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="d3">d</label>
+                        <input type="number" step="any" name="d3" id="d3" placeholder="0" required>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Visualize</button>
+        </form>
+    </div>
 </body>
 </html>

@@ -1,18 +1,187 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualization Result</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #e8eef5 0%, #dce5f0 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            color: #2d3748;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+            color: #1a365d;
+        }
+
+        .solution-badge {
+            display: inline-block;
+            padding: 0.5rem 1.25rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .badge-unique {
+            background: rgba(34, 197, 94, 0.15);
+            color: #15803d;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .badge-infinite {
+            background: rgba(59, 130, 246, 0.15);
+            color: #1d4ed8;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .badge-none {
+            background: rgba(239, 68, 68, 0.15);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .intersection-point {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .intersection-point p {
+            font-size: 1rem;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+        }
+
+        .coordinates {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: #b45309;
+        }
+
+        .graph-container {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .graph-container > div {
+            width: 100% !important;
+            height: auto !important;
+            min-height: 450px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            color: #1a365d;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+        }
+
+        .back-link:hover {
+            background: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-link svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem 0.75rem;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            .graph-container {
+                padding: 0.5rem;
+                border-radius: 8px;
+            }
+
+            .graph-container > div {
+                min-height: 350px;
+            }
+
+            .intersection-point {
+                padding: 0.75rem 1rem;
+            }
+
+            .coordinates {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>{{ solution_type }}</h1>
-    
-    {% if solution is not none %}
-        <p>Intersection Point: ({{ solution[0] }}, {{ solution[1] }}, {{ solution[2] }})</p>
-    {% endif %}
-    
-    <div>{{ graph|safe }}</div>
-    
-    <br>
-    <a href="/">Try Another System</a>
+    <div class="container">
+        <div class="result-header">
+            <h1>Visualization Result</h1>
+            {% if solution_type == "Unique Solution" %}
+                <span class="solution-badge badge-unique">{{ solution_type }}</span>
+            {% elif solution_type == "Infinite Solutions" %}
+                <span class="solution-badge badge-infinite">{{ solution_type }}</span>
+            {% else %}
+                <span class="solution-badge badge-none">{{ solution_type }}</span>
+            {% endif %}
+        </div>
+
+        {% if solution is not none %}
+        <div class="intersection-point">
+            <p>Intersection Point</p>
+            <span class="coordinates">({{ "%.4f"|format(solution[0]) }}, {{ "%.4f"|format(solution[1]) }}, {{ "%.4f"|format(solution[2]) }})</span>
+        </div>
+        {% endif %}
+
+        <div class="graph-container">
+            {{ graph|safe }}
+        </div>
+
+        <a href="/" class="back-link">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Try Another System
+        </a>
+    </div>
 </body>
 </html>
